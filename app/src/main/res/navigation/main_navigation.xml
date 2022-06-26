@@ -6,12 +6,12 @@
     app:startDestination="@id/currentWeather">
     <fragment
         android:id="@+id/currentWeather"
-        android:name="com.example.weatherapp.fragments.CurrentWeather"
+        android:name="com.example.weatherapp.ui.currentWether.CurrentWeather"
         android:label="CurrentWeather"
         tools:layout="@layout/current_waether_fragment" />
     <fragment
         android:id="@+id/weeksWeather"
-        android:name="com.example.weatherapp.fragments.WeeksWeather"
+        android:name="com.example.weatherapp.ui.fiveDaysWeather.WeeksWeather"
         android:label="WeeksWeather"
         tools:layout="@layout/weeks_waether_fragment" />
 </navigation>

@@ -54,10 +54,17 @@ dependencies {
     //Three dots
     implementation 'com.tbuonomo:dotsindicator:4.2'
 
-    //Retrofit
+    //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.3'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    //Chucker
+    debugImplementation "com.github.chuckerteam.chucker:library:3.5.2"
+
 
     //Navigation Component
     def nav_version = "2.3.5"
@@ -66,4 +73,12 @@ dependencies {
 
     //To find current location
     implementation 'com.google.android.gms:play-services-location:19.0.1'
+
+    //RXJava
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.1.4'
+    implementation 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'
+
+    //Shimmer
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 }

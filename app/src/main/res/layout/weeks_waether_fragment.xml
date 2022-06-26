@@ -4,14 +4,70 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/weather_main_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/clear_sky_background" />
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Weeks Weather Fragment"
-        android:textSize="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/city_name"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/card_view_background"
+        android:gravity="center|start"
+        android:paddingStart="10dp"
+        android:textColor="@color/current_weather_text"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/city_name" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/city_name">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+            <include layout="@layout/shimmer_item_list" />
+
+        </LinearLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,10 +4,10 @@
     <item
         android:id="@+id/currentWeather"
         android:icon="@drawable/today_icon"
-        android:title="CurrentWeather" />
+        android:title="Current Weather" />
 
     <item
         android:id="@+id/weeksWeather"
         android:icon="@drawable/week_icon"
-        android:title="weeksWeather" />
+        android:title="Five Days" />
 </menu>

@@ -11,4 +11,6 @@
     <color name="transparent">#00FFFFFF</color>
     <color name="card_view_background">#CCFFFFFF</color>
     <color name="current_weather_text">#2b8c97</color>
+    <color name="item_view_background">#80FFFFFF</color>
+    <color name="shimmer_item_view_background">#D6D6D6</color>
 </resources>
