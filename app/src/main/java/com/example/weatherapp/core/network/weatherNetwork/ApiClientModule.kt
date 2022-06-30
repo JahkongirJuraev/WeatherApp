@@ -1,11 +1,11 @@
-package com.example.weatherapp.core.network
+package com.example.weatherapp.core.network.weatherNetwork
 
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.example.weatherapp.core.app.App
-import com.example.weatherapp.core.network.services.FiveDaysWeatherService
-import com.example.weatherapp.core.network.services.WeatherService
+import com.example.weatherapp.core.network.weatherNetwork.services.FiveDaysWeatherService
+import com.example.weatherapp.core.network.weatherNetwork.services.WeatherService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
@@ -80,11 +80,11 @@ object ApiClientModule {
     private fun getGson(): Gson = GsonBuilder().setLenient().create()
 
     fun getCurrentWeatherService(): WeatherService {
-        return ApiClientModule.getApiClient().create(WeatherService::class.java)
+        return getApiClient().create(WeatherService::class.java)
     }
 
     fun getFiveDaysWeatherService(): FiveDaysWeatherService {
-        return ApiClientModule.getApiClient().create(FiveDaysWeatherService::class.java)
+        return getApiClient().create(FiveDaysWeatherService::class.java)
     }
 
 }

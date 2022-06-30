@@ -1,4 +1,4 @@
-package com.example.weatherapp.core.network.services
+package com.example.weatherapp.core.network.weatherNetwork.services
 
 import com.example.weatherapp.core.model.FiveDaysWeatherResponse.FiveDaysHourlyWeatherRespond
 import io.reactivex.rxjava3.core.Single

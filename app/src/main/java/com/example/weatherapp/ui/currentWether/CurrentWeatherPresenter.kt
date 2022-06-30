@@ -3,8 +3,8 @@ package com.example.weatherapp.ui.currentWether
 import com.example.weatherapp.core.cache.Cache
 import com.example.weatherapp.core.constant.CONSTANTS
 import com.example.weatherapp.core.model.WeatherData
-import com.example.weatherapp.core.network.ApiClientModule
-import com.example.weatherapp.core.network.services.WeatherService
+import com.example.weatherapp.core.network.weatherNetwork.ApiClientModule
+import com.example.weatherapp.core.network.weatherNetwork.services.WeatherService
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.observers.DisposableSingleObserver

@@ -1,35 +1,24 @@
 package com.example.weatherapp.ui
 
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.example.weatherapp.R
-import com.example.weatherapp.core.cache.Cache
 import com.example.weatherapp.core.extension.SetItemStatusBarColor
+import com.example.weatherapp.core.network.locationNetwork.LocationApiClientModule
 import com.example.weatherapp.databinding.ActivityMainBinding
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.gson.Gson
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.URL
-import java.net.URLConnection
 
 class MainActivity : AppCompatActivity() {
+
 
     var _binding: ActivityMainBinding? = null
     val binding get() = _binding!!
     lateinit var s: String
+    var locationService = LocationApiClientModule.getLocationService()
 
 /*
     val navigationComponent = Navigation.findNavController(this,R.id.nav_host_fragment)
@@ -43,9 +32,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         SetItemStatusBarColor(getColor(R.color.white), true)
 
-        Cache.getInstance().cityName = Cache.getInstance().defaultCity
+        //1/ Cache.getInstance().cityName = Cache.getInstance().defaultCity
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        //1/fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val navigationComponent = Navigation.findNavController(this, R.id.nav_host_fragment)
         binding.mainBottomView.setupWithNavController(
@@ -55,32 +44,32 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        requestPermission()
+        //1/requestPermission()
 
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    /*//1/@RequiresApi(Build.VERSION_CODES.N)
     val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                // Precise location access granted.
+                requestPermission()
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // Only approximate location access granted.
+                requestPermission()
 
             }
             else -> {
                 // No location access granted.
             }
         }
-    }
+    }*/
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    //1/private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    /*//1/@RequiresApi(Build.VERSION_CODES.N)
     fun requestPermission() {
 
 
@@ -107,41 +96,73 @@ class MainActivity : AppCompatActivity() {
                     location?.let {
                         val lon: Double = location.longitude
                         val lat: Double = location.latitude
+                        var disposable = locationService.getLocationData(lon = lon, lat = lat)
+                            .observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
+                            .subscribeWith(
+                                object : DisposableSingleObserver<Response<LocationResponse?>>() {
+                                    override fun onSuccess(t: Response<LocationResponse?>) {
+                                        if (t.isSuccessful) {
+                                            t.body()?.let {
+                                                Cache.getInstance().cityName=it.features[0].properties.city
+                                                Cache.getInstance().defaultCity=it.features[0].properties.city
+                                            }
+                                        } else {
+                                            Snackbar.make(
+                                                applicationContext,
+                                                binding.root,
+                                                t.message().toString(),
+                                                Snackbar.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+
+                                    override fun onError(e: Throwable) {
+                                        Snackbar.make(
+                                            applicationContext,
+                                            binding.root,
+                                            e.message.toString(),
+                                            Snackbar.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                })
+                        *//*Log.d("TAG",lat.toString())
+                        Log.d("TAG",lon.toString())
                         val url: String =
                             "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lon&zoom18&format=json"
                         val content: String = getContentFromUsl(url)
                         val gson: Gson = Gson()
                         // val data: LocationData = gson.fromJson(content, LocationData::class.java)
                         //var stringBuilder: String = data.address.cityName
-                        //Cache.getInstance().cityName = stringBuilder
+                        //Cache.getInstance().cityName = stringBuilder*//*
                     }
 
                 }
-        }
+        }*/
 
 
-    }
-
-    fun getContentFromUsl(stringUrl: String): String {
-        var stringBuilder = StringBuilder()
-        try {
-            var url = URL(stringUrl)
-
-            var urlConnection: URLConnection = url.openConnection()
-
-            var bufferReader: BufferedReader =
-                BufferedReader(InputStreamReader(urlConnection.getInputStream()))
-
-            while ((bufferReader.readLine().also { s = it }) != null) {
-                stringBuilder.append(s)
-            }
-
-            bufferReader.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return stringBuilder.toString()
-    }
 }
+
+/*fun getContentFromUsl(stringUrl: String): String {
+    var stringBuilder = StringBuilder()
+    try {
+        var url = URL(stringUrl)
+
+        var urlConnection: URLConnection = url.openConnection()
+
+        var bufferReader: BufferedReader =
+            BufferedReader(InputStreamReader(urlConnection.getInputStream()))
+
+        while ((bufferReader.readLine().also { s = it }) != null) {
+            stringBuilder.append(s)
+        }
+
+        bufferReader.close()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return stringBuilder.toString()
+}*/
+//}
 
 

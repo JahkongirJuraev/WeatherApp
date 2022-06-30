@@ -29,13 +29,25 @@ public class Cache {
         return preferences.getString(CITY_NAME, "Samarqand");
     }
 
+    public void setCityName(String cityName) {
+        preferences.edit().putString(CITY_NAME, cityName).apply();
+    }
+
     public String getDefaultCity() {
         return preferences.getString("DEFAULT_CITY_NAME", "Samarqand");
     }
 
-    public void setCityName(String cityName) {
-        preferences.edit().putString(CITY_NAME, cityName).apply();
+    public void setDefaultCity(String cityName) {
+        preferences.edit().putString("DEFAULT_CITY_NAME", cityName).apply();
     }
+
+
+    public boolean getLocationGranted() {
+        return preferences.getBoolean("isLocationGranted", false);
+    }
+
+    public void setLocationGranted(boolean isLocationGranted) {
+        preferences.edit().putBoolean("isLocationGranted", isLocationGranted).apply();
+    }
+
 }
-
-

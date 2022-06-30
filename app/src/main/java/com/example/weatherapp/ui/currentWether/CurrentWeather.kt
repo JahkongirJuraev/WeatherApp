@@ -1,17 +1,33 @@
 package com.example.weatherapp.ui.currentWether
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.weatherapp.R
 import com.example.weatherapp.core.cache.Cache
 import com.example.weatherapp.core.model.WeatherData
+import com.example.weatherapp.core.model.location.LocationResponse
+import com.example.weatherapp.core.network.locationNetwork.LocationApiClientModule
 import com.example.weatherapp.databinding.CurrentWaetherFragmentBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.observers.DisposableSingleObserver
+import io.reactivex.rxjava3.schedulers.Schedulers
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -19,6 +35,8 @@ import java.util.*
 class CurrentWeather : Fragment(), CurrentWeatherMVP.View {
 
     var presenter: CurrentWeatherMVP.Presenter? = null
+    var locationService = LocationApiClientModule.getLocationService()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var _binding: CurrentWaetherFragmentBinding? = null
     val binding get() = _binding!!
@@ -34,18 +52,134 @@ class CurrentWeather : Fragment(), CurrentWeatherMVP.View {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (Cache.getInstance().locationGranted) {
+            presenter = CurrentWeatherPresenter(this)
+            presenter?.loadCurrentWeather()
+        } else {
+            getUserLocation()
+        }
         Cache.getInstance().cityName = Cache.getInstance().defaultCity
-        presenter = CurrentWeatherPresenter(this)
-        presenter?.loadCurrentWeather()
         loadDate()
+
         binding.searchView.isFocusable = false
         binding.activeWeatherInfo.visibility = View.INVISIBLE
 
         performSearch()
 
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun getUserLocation() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        requestPermission()
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun requestPermission() {
+
+
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionRequest.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        } else {
+            Toast.makeText(requireContext(), "Granted ", Toast.LENGTH_SHORT).show()
+
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+
+                    location?.let {
+                        val lon: Double = location.longitude
+                        val lat: Double = location.latitude
+                        var disposable = locationService.getLocationData(lon = lon, lat = lat)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribeWith(
+                                object :
+                                    DisposableSingleObserver<Response<LocationResponse?>>() {
+                                    override fun onSuccess(t: Response<LocationResponse?>) {
+                                        if (t.isSuccessful) {
+                                            t.body()?.let {
+                                                Cache.getInstance().cityName =
+                                                    it.features[0].properties.city
+                                                Cache.getInstance().defaultCity =
+                                                    it.features[0].properties.city
+                                                Cache.getInstance().locationGranted = true
+                                                startPresenter()
+                                            }
+                                        } else {
+                                            Snackbar.make(
+                                                requireContext(),
+                                                binding.root,
+                                                t.message().toString() + " TOP  ",
+                                                Snackbar.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+
+                                    override fun onError(e: Throwable) {
+                                        Snackbar.make(
+                                            requireContext(),
+                                            binding.root,
+                                            e.message.toString() + "  Bottom ",
+                                            Snackbar.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                })
+                        /*Log.d("TAG",lat.toString())
+                        Log.d("TAG",lon.toString())
+                        val url: String =
+                            "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lon&zoom18&format=json"
+                        val content: String = getContentFromUsl(url)
+                        val gson: Gson = Gson()
+                        // val data: LocationData = gson.fromJson(content, LocationData::class.java)
+                        //var stringBuilder: String = data.address.cityName
+                        //Cache.getInstance().cityName = stringBuilder*/
+                    }
+
+                }
+        }
+
+    }
+
+    private fun startPresenter() {
+        presenter = CurrentWeatherPresenter(this)
+        presenter?.loadCurrentWeather()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                requestPermission()
+            }
+            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                requestPermission()
+
+            }
+            else -> {
+                // No location access granted.
+            }
+        }
     }
 
 
