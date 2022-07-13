@@ -60,6 +60,7 @@ class CurrentWeather : Fragment(), CurrentWeatherMVP.View {
         if (Cache.getInstance().locationGranted) {
             presenter = CurrentWeatherPresenter(this)
             presenter?.loadCurrentWeather()
+            Toast.makeText(context, "Not Granted", Toast.LENGTH_SHORT).show()
         } else {
             getUserLocation()
         }
@@ -82,7 +83,6 @@ class CurrentWeather : Fragment(), CurrentWeatherMVP.View {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun requestPermission() {
-
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
